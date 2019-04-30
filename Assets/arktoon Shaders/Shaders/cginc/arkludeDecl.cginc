@@ -2,7 +2,6 @@
 #include "AutoLight.cginc"
 #include "Lighting.cginc"
 
-
 #if defined(ARKTOON_SECONDARY)
     // Secondary
     UNITY_DECLARE_TEX2D(_MainTexSecondary); uniform float4 _MainTexSecondary_ST;

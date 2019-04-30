@@ -186,7 +186,7 @@ float4 frag(VertexOutput i) : COLOR {
     }
 
     // MatCapのブレンドモード
-    if (_MatcapBlendMode == 0) { // Add
+    if(_MatcapBlendMode == 0) { // Add
         finalColor = finalColor + matcap;
     } else if(_MatcapBlendMode == 1) { // Lighten
         finalColor = max(finalColor, matcap);
@@ -201,5 +201,26 @@ float4 frag(VertexOutput i) : COLOR {
         fixed4 finalRGBA = fixed4(finalColor * 1,0);
     #endif
     UNITY_APPLY_FOG(i.fogCoord, finalRGBA);
+
+    #ifdef _FADEMODE_TRANSPARENT
+        finalRGBA.w *= fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion));
+    #elif _FADEMODE_RED
+        finalRGBA.x += ((1 - finalRGBA.x) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.y += ((0 - finalRGBA.y) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.z += ((0 - finalRGBA.z) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+    #elif _FADEMODE_GREEN
+        finalRGBA.x += ((0 - finalRGBA.x) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.y += ((1 - finalRGBA.y) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.z += ((0 - finalRGBA.z) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+    #elif _FADEMODE_BLUE
+        finalRGBA.x += ((0 - finalRGBA.x) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.y += ((0 - finalRGBA.y) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.z += ((1 - finalRGBA.z) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+    #elif _FADEMODE_CUSTOM
+        finalRGBA.x += ((_CustomColor.x - finalRGBA.x) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.y += ((_CustomColor.y - finalRGBA.y) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+        finalRGBA.z += ((_CustomColor.z - finalRGBA.z) * fixed(abs(1 - (clamp(distance(i.posWorld.xyz, _WorldSpaceCameraPos), _FadeStartDepth, _FadeEndDepth) - _FadeStartDepth) / (_FadeEndDepth - _FadeStartDepth) - _VisibilityInversion)));
+    #endif
+
     return finalRGBA;
 }

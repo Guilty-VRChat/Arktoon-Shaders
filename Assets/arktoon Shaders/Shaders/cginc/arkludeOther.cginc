@@ -1,26 +1,26 @@
 #include "Lighting.cginc"
 
-float3 ShadeSH9Indirect(){
+float3 ShadeSH9Indirect() {
     return ShadeSH9(half4(0.0, -1.0, 0.0, 1.0));
 }
 
-float3 ShadeSH9Direct(){
+float3 ShadeSH9Direct() {
     return ShadeSH9(half4(0.0, 1.0, 0.0, 1.0));
 }
 
-float3 grayscale_vector_node(){
+float3 grayscale_vector_node() {
     return float3(0, 0.3823529, 0.01845836);
 }
 
-float3 grayscale_for_light(){
+float3 grayscale_for_light() {
     return float3(0.298912, 0.586611, 0.114478);
 }
 
-float3 ShadeSH9Normal( float3 normalDirection ){
+float3 ShadeSH9Normal( float3 normalDirection ) {
     return ShadeSH9(half4(normalDirection, 1.0));
 }
 
-float3 CalculateHSV(float3 baseTexture, float hueShift, float saturation, float value ){
+float3 CalculateHSV(float3 baseTexture, float hueShift, float saturation, float value) {
     float4 node_5443_k = float4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);
     float4 node_5443_p = lerp(float4(float4(baseTexture,0.0).zy, node_5443_k.wz), float4(float4(baseTexture,0.0).yz, node_5443_k.xy), step(float4(baseTexture,0.0).z, float4(baseTexture,0.0).y));
     float4 node_5443_q = lerp(float4(node_5443_p.xyw, float4(baseTexture,0.0).x), float4(float4(baseTexture,0.0).x, node_5443_p.yzx), step(node_5443_p.x, float4(baseTexture,0.0).x));
@@ -31,8 +31,7 @@ float3 CalculateHSV(float3 baseTexture, float hueShift, float saturation, float 
 }
 
 // SH変数群から最大光量を取得
-half3 GetSHLength ()
-{
+half3 GetSHLength() {
     half3 x, x1;
     x.r = length(unity_SHAr);
     x.g = length(unity_SHAg);
@@ -43,8 +42,7 @@ half3 GetSHLength ()
     return x + x1;
 }
 
-float3 GetIndirectSpecular(float3 lightColor, float3 lightDirection, float3 normalDirection,float3 viewDirection,
-float3 viewReflectDirection, float attenuation, float roughness, float3 worldPos){
+float3 GetIndirectSpecular(float3 lightColor, float3 lightDirection, float3 normalDirection, float3 viewDirection, float3 viewReflectDirection, float attenuation, float roughness, float3 worldPos) {
     UnityLight light;
     light.color = lightColor;
     light.dir = lightDirection;
@@ -70,7 +68,7 @@ float3 viewReflectDirection, float attenuation, float roughness, float3 worldPos
     return saturate(indirectSpecular);
 }
 
-float3 GetIndirectSpecularCubemap(samplerCUBE _ReflectionCubemap, half4 _ReflectionCubemap_HDR, float3 viewReflectDirection, float roughness){
+float3 GetIndirectSpecularCubemap(samplerCUBE _ReflectionCubemap, half4 _ReflectionCubemap_HDR, float3 viewReflectDirection, float roughness) {
     half3 specular;
     #ifdef _GLOSSYREFLECTIONS_OFF
         specular = unity_IndirectSpecColor.rgb;

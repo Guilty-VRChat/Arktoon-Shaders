@@ -1,6 +1,4 @@
-
-struct v2g
-{
+struct v2g {
     float4 vertex : POSITION;
     float3 normal : NORMAL;
     float4 tangent : TANGENT;
@@ -23,7 +21,6 @@ struct v2g
     #endif
 };
 
-
 v2g vert(appdata_full v) {
     v2g o;
     o.uv0 = v.texcoord;
@@ -41,7 +38,7 @@ v2g vert(appdata_full v) {
     #ifndef ARKTOON_ADD
         // 頂点ライティングが必要な場合に取得
         #if UNITY_SHOULD_SAMPLE_SH && defined(VERTEXLIGHT_ON)
-            if (_UseVertexLight) {
+            if(_UseVertexLight) {
                 o.lightColor0 = unity_LightColor[0].rgb;
                 o.lightColor1 = unity_LightColor[1].rgb;
                 o.lightColor2 = unity_LightColor[2].rgb;
@@ -130,13 +127,11 @@ struct VertexOutput {
 #endif
 
 [maxvertexcount(9)]
-void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
-{
+void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream) {
     VertexOutput o;
     #if !defined(ARKTOON_REFRACTED)
-    if (_UseOutline) {
-        for (int i = 2; i >= 0; i--)
-        {
+    if(_UseOutline) {
+        for(int i = 2; i >= 0; i--) {
             float4 _OutlineTexture_var = tex2Dlod (_OutlineTexture, float4( TRANSFORM_TEX(IN[i].uv0, _OutlineTexture), 0, 0));
             float _OutlineWidthMask_var = tex2Dlod (_OutlineWidthMask, float4( TRANSFORM_TEX(IN[i].uv0, _OutlineWidthMask), 0, 0));
             float width = _OutlineWidth * _OutlineWidthMask_var;
@@ -174,7 +169,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
                 o.lightColor2          = IN[i].lightColor2;
                 o.lightColor3          = IN[i].lightColor3;
                 #if UNITY_SHOULD_SAMPLE_SH
-                    if (_UseVertexLight) {
+                    if(_UseVertexLight) {
                         calcAmbientByShade4PointLights(0, o);
                     } else {
                         o.ambientAttenuation = o.ambientIndirect = 0;
@@ -191,9 +186,8 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
     }
     #endif
 
-    if (_UseDoubleSided) {
-        for (int iii = 2; iii >= 0; iii--)
-        {
+    if(_UseDoubleSided) {
+        for(int iii = 2; iii >= 0; iii--) {
             o.pos = UnityObjectToClipPos(IN[iii].vertex);
             o.uv0 = IN[iii].uv0;
             o.col = fixed4(1., 1., 1., 0.);
@@ -227,7 +221,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
                 o.lightColor2          = IN[iii].lightColor2;
                 o.lightColor3          = IN[iii].lightColor3;
                 #if UNITY_SHOULD_SAMPLE_SH
-                    if (_UseVertexLight) {
+                    if(_UseVertexLight) {
                         calcAmbientByShade4PointLights(_DoubleSidedFlipBackfaceNormal, o);
                     } else {
                         o.ambientAttenuation = o.ambientIndirect = 0;
@@ -243,8 +237,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
         tristream.RestartStrip();
     }
 
-    for (int ii = 0; ii < 3; ii++)
-    {
+    for(int ii = 0; ii < 3; ii++) {
         o.pos = UnityObjectToClipPos(IN[ii].vertex);
         o.uv0 = IN[ii].uv0;
         o.col = fixed4(1., 1., 1., 0.);
@@ -278,7 +271,7 @@ void geom(triangle v2g IN[3], inout TriangleStream<VertexOutput> tristream)
             o.lightColor2          = IN[ii].lightColor2;
             o.lightColor3          = IN[ii].lightColor3;
             #if UNITY_SHOULD_SAMPLE_SH
-                if (_UseVertexLight) {
+                if(_UseVertexLight) {
                     calcAmbientByShade4PointLights(0, o);
                 } else {
                     o.ambientAttenuation = o.ambientIndirect = 0;

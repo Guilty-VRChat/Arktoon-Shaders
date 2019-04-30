@@ -23,16 +23,14 @@ UNITY_DECLARE_TEX2D_NOSAMPLER(_AlphaMask); uniform float4 _AlphaMask_ST;
 sampler3D   _DitherMaskLOD;
 #endif
 
-struct VertexInputS
-{
+struct VertexInputS {
     float4 vertex   : POSITION;
     float3 normal   : NORMAL;
     float2 uv0      : TEXCOORD0;
 };
 
 #ifdef UNITY_STANDARD_USE_SHADOW_OUTPUT_STRUCT
-struct VertexOutputShadowCaster
-{
+struct VertexOutputShadowCaster {
     V2F_SHADOW_CASTER_NOPOS
     float2 tex : TEXCOORD1;
 };
@@ -46,8 +44,7 @@ void vertShadowCaster (VertexInputS v,
     #ifdef UNITY_STANDARD_USE_SHADOW_OUTPUT_STRUCT
     out VertexOutputShadowCaster o,
     #endif
-    out float4 opos : SV_POSITION)
-{
+    out float4 opos : SV_POSITION) {
     #ifdef UNITY_STANDARD_USE_SHADOW_OUTPUT_STRUCT
         UNITY_INITIALIZE_OUTPUT(VertexOutputShadowCaster, o);
     #endif
@@ -65,8 +62,7 @@ half4 fragShadowCaster (
 #ifdef UNITY_STANDARD_USE_DITHER_MASK
     , UNITY_VPOS_TYPE vpos : VPOS
 #endif
-    ) : SV_Target
-{
+    ) : SV_Target {
     #if defined(UNITY_STANDARD_USE_SHADOW_UVS)
         float4 _MainTex_var = UNITY_SAMPLE_TEX2D(_MainTex, TRANSFORM_TEX(i.tex, _MainTex));
         fixed _AlphaMask_var = UNITY_SAMPLE_TEX2D_SAMPLER(_AlphaMask, _MainTex, TRANSFORM_TEX(i.tex, _AlphaMask)).r;
