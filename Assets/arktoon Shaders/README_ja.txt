@@ -6,7 +6,7 @@ https://docs.google.com/document/d/15qR1ixw7YO1vKqaJXp5ul3Yvsgvv2cWa3YlXM07iQlo/
 
 【ライセンス等】
 本コードはMIT Licenseを適用しております。
-https://github.com/synqark/Arktoon-Shaders/blob/master/LICENSE
+https://github.com/Guilty-VRChat/Arktoon-Shaders/blob/master/LICENSE
 
 VRChat以外での利用に関しては、上記の範囲内でお願いいたします。
 
