@@ -4,8 +4,14 @@
 // Twitter : guilty_vrchat
 // Gmail : guilty0546@gmail.com
 
-Shader "arktoon/FadeRefracted" {
+Shader "Guilty/ArktoonDistanceFade" {
     Properties {
+        [KeywordEnum(TRANPARENT, RED, GREEN, BLUE, CUSTOM)] _FADEMODE("Fade Mode", int) = 0
+        _CustomColor ("Custom Color", Color) = (0, 0, 0, 1)
+        _FadeStartDepth ("Fade Start Depth", float) = 2
+		_FadeEndDepth ("Fade End Depth", float) = 4
+        [MaterialToggle] _VisibilityInversion ("Visibility Inversion", float) = 0
+
         // Double Sided
         [ATSToggle]_UseDoubleSided ("Double Sided", Int ) = 0
         [ATSToggle]_DoubleSidedFlipBackfaceNormal ("Flip backface normal", Float ) = 0
@@ -34,9 +40,6 @@ Shader "arktoon/FadeRefracted" {
         _EmissionParallaxDepth ("[Emission Parallax] Depth", Range(-1, 1) ) = 0
         _EmissionParallaxDepthMask ("[Emission Parallax] Depth Mask", 2D ) = "white" {}
         [ATSToggle]_EmissionParallaxDepthMaskInvert ("[Emission Parallax] Invert Depth Mask", Float ) = 0
-        // refraction
-        _RefractionFresnelExp ("[Refraction] Fresnel Exp",  Range(0, 10)) = 0
-        _RefractionStrength ("[Refraction] Strength",  Range(-2, 2)) = 0
         // Shadow (received from DirectionalLight, other Indirect(baked) Lights, including SH)
         _Shadowborder ("[Shadow] border ", Range(0, 1)) = 0.6
         _ShadowborderBlur ("[Shadow] border Blur", Range(0, 1)) = 0.05
@@ -90,12 +93,12 @@ Shader "arktoon/FadeRefracted" {
         _OutlineShadeMix ("[Outline] Shade Mix", Range(0, 1)) = 0
         _OutlineTextureColorRate ("[Outline] Texture Color Rate", Range(0, 1)) = 0.05
         _OutlineWidthMask ("[Outline] Outline Width Mask", 2D) = "white" {}
+        // MatCap
+        [Enum(Add,0, Lighten,1, Screen,2, Unused,3)] _MatcapBlendMode ("[MatCap] Blend Mode", Int) = 3
         [ATSToggle]_OutlineUseColorShift("[Outline] Use Outline Color Shift", Int) = 0
         [PowerSlider(2.0)]_OutlineHueShiftFromBase("[Outline] Hue Shift From Base", Range(-0.5, 0.5)) = 0
         _OutlineSaturationFromBase("[Outline] Saturation From Base", Range(0, 2)) = 1
         _OutlineValueFromBase("[Outline] Value From Base", Range(0, 2)) = 1
-        // MatCap
-        [Enum(Add,0, Lighten,1, Screen,2, Unused,3)] _MatcapBlendMode ("[MatCap] Blend Mode", Int) = 3
         _MatcapBlend ("[MatCap] Blend", Range(0, 3)) = 1
         _MatcapBlendMask ("[MatCap] Blend Mask", 2D) = "white" {}
         _MatcapNormalMix ("[MatCap] Normal map mix", Range(0, 2)) = 1
@@ -147,7 +150,6 @@ Shader "arktoon/FadeRefracted" {
             "Queue"="Transparent"
             "RenderType"="Transparent"
         }
-        GrabPass{ }
         Pass {
             Name "FORWARD"
             Tags {
@@ -159,7 +161,6 @@ Shader "arktoon/FadeRefracted" {
 
             CGPROGRAM
 
-
             #pragma vertex vert
             #pragma geometry geom
             #pragma fragment frag
@@ -167,13 +168,18 @@ Shader "arktoon/FadeRefracted" {
             #pragma multi_compile_fog
             #pragma only_renderers d3d9 d3d11 glcore gles
             #pragma target 4.0
+
+            #pragma multi_compile _FADEMODE_TRANSPARENT _FADEMODE_RED _FADEMODE_GREEN _FADEMODE_BLUE _FADEMODE_CUSTOM
+
             #define ARKTOON_FADE
-            #define ARKTOON_REFRACTED
+
+            float _FadeStartDepth, _FadeEndDepth, _VisibilityInversion;
+            fixed4 _CustomColor;
 
             #include "cginc/arkludeDecl.cginc"
             #include "cginc/arkludeOther.cginc"
             #include "cginc/arkludeVertGeom.cginc"
-            #include "cginc/arkludeFrag.cginc"
+            #include "cginc/arkludeDistanceFadeFrag.cginc"
             ENDCG
         }
         Pass {
@@ -194,14 +200,19 @@ Shader "arktoon/FadeRefracted" {
             #pragma multi_compile_fog
             #pragma only_renderers d3d9 d3d11 glcore gles
             #pragma target 4.0
+
+            #pragma multi_compile _FADEMODE_TRANSPARENT _FADEMODE_RED _FADEMODE_GREEN _FADEMODE_BLUE _FADEMODE_CUSTOM
+
             #define ARKTOON_FADE
             #define ARKTOON_ADD
-            #define ARKTOON_REFRACTED
+
+            float _FadeStartDepth, _FadeEndDepth, _VisibilityInversion;
+            fixed4 _CustomColor;
 
             #include "cginc/arkludeDecl.cginc"
             #include "cginc/arkludeOther.cginc"
             #include "cginc/arkludeVertGeom.cginc"
-            #include "cginc/arkludeAdd.cginc"
+            #include "cginc/arkludeDistanceFadeAdd.cginc"
             ENDCG
         }
 
@@ -229,5 +240,5 @@ Shader "arktoon/FadeRefracted" {
         }
     }
     FallBack "Standard"
-    CustomEditor "ArktoonShaders.ArktoonInspector"
+    CustomEditor "ArktoonShaders.ArktoonDistanceFadeInspector"
 }

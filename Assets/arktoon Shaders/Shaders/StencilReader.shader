@@ -1,9 +1,9 @@
-// Copyright (c) 2018 synqark
-//
-// This code and repos（https://github.com/synqark/Arktoon-Shader) is under MIT licence, see LICENSE
-//
-// 本コードおよびリポジトリ（https://github.com/synqark/Arktoon-Shader) は MIT License を使用して公開しています。
-// 詳細はLICENSEか、https://opensource.org/licenses/mit-license.php を参照してください。
+// Copyright (c) 2019 Guilty
+// MIT License
+// GitHub : https://github.com/Guilty-VRChat/Arktoon-Shaders
+// Twitter : guilty_vrchat
+// Gmail : guilty0546@gmail.com
+
 Shader "arktoon/Stencil/Reader/Cutout" {
     Properties {
         // Double Sided
