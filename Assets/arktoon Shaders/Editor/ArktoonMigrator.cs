@@ -1,3 +1,9 @@
+// Copyright (c) 2019 Guilty
+// MIT License
+// GitHub : https://github.com/Guilty-VRChat/Arktoon-Shaders
+// Twitter : guilty_vrchat
+// Gmail : guilty0546@gmail.com
+
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,11 +14,8 @@ using System.Linq;
 using System;
 using System.Text.RegularExpressions;
 
-namespace ArktoonShaders
-{
-    public class ArktoonMigrator : MonoBehaviour
-    {
-
+namespace ArktoonShaders {
+    public class ArktoonMigrator : MonoBehaviour {
         // 自動マイグレーション設定
         const string autoMigrateMenuPath = "Arktoon/Migration/Auto Migration";
         public static bool AutoMigrate {get;set;} // デフォルトがチェック済みの時には true にする
@@ -25,31 +28,27 @@ namespace ArktoonShaders
             Menu.SetChecked(autoMigrateMenuPath, AutoMigrate);
         }
         [MenuItem(autoMigrateMenuPath)]
-        public static void MenuAutoMigrate ()
-        {
+        public static void MenuAutoMigrate() {
             AutoMigrate = !AutoMigrate;
             Menu.SetChecked(autoMigrateMenuPath, AutoMigrate);
             EditorUserSettings.SetConfigValue("select", AutoMigrate.ToString());
         }
         [MenuItem(autoMigrateMenuPath, true)]
-        public static bool MenuAutoMigrateValidate ()
-        {
+        public static bool MenuAutoMigrateValidate() {
             Menu.SetChecked(autoMigrateMenuPath, AutoMigrate);
             return true;
         }
 
-
         // マイグレーションをする
         [MenuItem("Arktoon/Migration/Force migrate all arktoon materials")]
-        private static void MigrateFromMenu(){
+        private static void MigrateFromMenu() {
             Migrate();
         }
 
         /// <summary>
         /// プロジェクトに含まれるArktoonマテリアルのマイグレーションを実行
         /// </summary>
-        public static void Migrate()
-        {
+        public static void Migrate() {
             // Arktoonを使用しているマテリアルを列挙
             var mats = CollectMaterials(ArktoonManager.variations.ToArray());
             var matsList  = mats.ToList();
@@ -66,10 +65,10 @@ namespace ArktoonShaders
         private static List<Material> CollectMaterials(string[] shaderNames) {
             List<Material> armat = new List<Material>();
             Renderer[] arrend = (Renderer[])Resources.FindObjectsOfTypeAll(typeof(Renderer));
-            foreach (Renderer rend in arrend) {
-                foreach (Material mat in rend.sharedMaterials) {
-                    if (mat != null && !armat.Contains (mat)) {
-                        if (mat.shader != null && mat.shader.name != null && shaderNames.Contains(mat.shader.name)) {
+            foreach(Renderer rend in arrend) {
+                foreach(Material mat in rend.sharedMaterials) {
+                    if(mat != null && !armat.Contains (mat)) {
+                        if(mat.shader != null && mat.shader.name != null && shaderNames.Contains(mat.shader.name)) {
                             armat.Add (mat);
                         }
                     }
@@ -83,8 +82,7 @@ namespace ArktoonShaders
         /// </summary>
         /// <param name="mat">対象のマテリアル</param>
         /// <returns></returns>
-        public static string MigrateArktoonMaterial(Material mat)
-        {
+        public static string MigrateArktoonMaterial(Material mat) {
             var log = "";
             // 移行先バージョンは、ArktoonManager.AssetVersionIntが持っている
             var newVersion = ArktoonManager.AssetVersionInt;
@@ -104,7 +102,7 @@ namespace ArktoonShaders
             // 1.0.0.0 ← (any)
             // 最初のバージョン
             // それ以前からのマイグレーションは実施しない。
-            if( curreentVersion < 1000 ) {
+            if(curreentVersion < 1000) {
                 // do nothing
                 log += String.Format(" 1000");
             }
@@ -113,13 +111,12 @@ namespace ArktoonShaders
             // - OUTLINE_WIDTH_MASKを排除する。
             // - UseOutlineWidthMaskがオフか、オンではあるがマスクテクスチャが指定されていない場合は、マスクテクスチャの割り当てを解除する。
             // - Use Custom Shadeがオンである場合に、Shadow Strengthを1にする
-            if( curreentVersion < 1010 ) {
+            if(curreentVersion < 1010) {
                 mat.DisableKeyword("OUTLINE_WIDTH_MASK");
-                if( (mat.HasProperty("_UseOutlineWidthMask") && mat.GetFloat("_UseOutlineWidthMask") == 0) ||
-                    (mat.HasProperty("_OutlineWidthMask")    && mat.GetTexture("_OutlineWidthMask") == null )) {
-                        mat.SetTexture("_OutlineWidthMask", null);
+                if((mat.HasProperty("_UseOutlineWidthMask") && mat.GetFloat("_UseOutlineWidthMask") == 0) || (mat.HasProperty("_OutlineWidthMask") && mat.GetTexture("_OutlineWidthMask") == null)) {
+                    mat.SetTexture("_OutlineWidthMask", null);
                 }
-                if (mat.GetInt("_ShadowPlanBUsePlanB") > 0) {
+                if(mat.GetInt("_ShadowPlanBUsePlanB") > 0) {
                     mat.SetFloat("_ShadowStrength", 1.0f);
                 }
                 log += String.Format(" 1010");
@@ -127,8 +124,8 @@ namespace ArktoonShaders
 
             // 1.0.2.0 ← 1.0.1.0
             // shaderNameが使用されている全てのマテリアルに設定されているシェーダーキーワードを削除する。
-            if( curreentVersion < 1020 ) {
-                if (mat != null && mat.shader != null) {
+            if(curreentVersion < 1020) {
+                if(mat != null && mat.shader != null) {
                     var keywords = new List<string>(mat.shaderKeywords);
                     keywords.ForEach(keyword => mat.DisableKeyword(keyword));
                 }
@@ -140,11 +137,8 @@ namespace ArktoonShaders
             return log + Environment.NewLine;
         }
 
-
-
         [MenuItem("Arktoon/Clear Shader Keywords")]
-        private static void ClearArktoonKeywords()
-        {
+        private static void ClearArktoonKeywords() {
             ClearKeywordsByShader(ArktoonManager.variations.ToArray());
         }
 
@@ -156,15 +150,15 @@ namespace ArktoonShaders
             var stArea = "";
             List<Material> armat = new List<Material>();
             Renderer[] arrend = (Renderer[])Resources.FindObjectsOfTypeAll(typeof(Renderer));
-            foreach (Renderer rend in arrend) {
+            foreach(Renderer rend in arrend) {
                 foreach (Material mat in rend.sharedMaterials) {
-                    if (!armat.Contains (mat)) {
+                    if(!armat.Contains (mat)) {
                         armat.Add (mat);
                     }
                 }
             }
-            foreach (Material mat in armat) {
-                if (mat != null && mat.shader != null && mat.shader.name != null && shaderNames.Contains(mat.shader.name)) {
+            foreach(Material mat in armat) {
+                if(mat != null && mat.shader != null && mat.shader.name != null && shaderNames.Contains(mat.shader.name)) {
                     stArea += ">"+mat.name + ":" + string.Join(" ", mat.shaderKeywords) + "\n";
                     var keywords = new List<string>(mat.shaderKeywords);
                     keywords.ForEach(keyword => mat.DisableKeyword(keyword));

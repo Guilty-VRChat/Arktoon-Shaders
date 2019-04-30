@@ -1,3 +1,9 @@
+// Copyright (c) 2019 Guilty
+// MIT License
+// GitHub : https://github.com/Guilty-VRChat/Arktoon-Shaders
+// Twitter : guilty_vrchat
+// Gmail : guilty0546@gmail.com
+
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
@@ -8,10 +14,8 @@ using System.Linq;
 using System;
 using System.Text.RegularExpressions;
 
-namespace ArktoonShaders
-{
-    public class ArktoonManager : MonoBehaviour
-    {
+namespace ArktoonShaders {
+    public class ArktoonManager : MonoBehaviour {
         static string url = "https://api.github.com/repos/synqark/Arktoon-Shaders/releases/latest";
         static UnityWebRequest www;
         public static readonly string version = "1.0.2.4";
@@ -22,8 +26,7 @@ namespace ArktoonShaders
         /// </summary>
         /// <value></value>
         public static int AssetVersionInt {
-            get
-            {
+            get {
                 var new_version = ArktoonManager.version;
                 System.Version newVersion = new System.Version(new_version);
                 return newVersion.Major * 1000 + newVersion.Minor * 100 + newVersion.Build * 10 + newVersion.Revision;
@@ -37,8 +40,7 @@ namespace ArktoonShaders
         /// </summary>
         /// <value></value>
         public static int LocalVersionInt {
-            get
-            {
+            get {
                 string localVersion = EditorUserSettings.GetConfigValue("arktoon_version_local") ?? "";
                 if(string.IsNullOrEmpty(localVersion)) localVersion = "1.0.1.1";
                 System.Version existVersion = new System.Version(localVersion);
@@ -46,7 +48,7 @@ namespace ArktoonShaders
             }
         }
 
-        public static readonly List<string> variations = new List<string>(){
+        public static readonly List<string> variations = new List<string>() {
                 "arktoon/Opaque",
                 "arktoon/Fade",
                 "arktoon/AlphaCutout",
@@ -60,15 +62,14 @@ namespace ArktoonShaders
         };
 
         [DidReloadScripts(0)]
-        private static void CheckVersion ()
-        {
+        private static void CheckVersion () {
             if(EditorApplication.isPlayingOrWillChangePlaymode) return;
 
             // ローカルバージョンを確認
             Debug.Log ("[Arktoon] Checking local version.");
             string localVersion = EditorUserSettings.GetConfigValue("arktoon_version_local") ?? "";
 
-            if (!localVersion.Equals(version)) {
+            if(!localVersion.Equals(version)) {
                 // Arktoonが更新または新規にインストールされているので、既存のマテリアルの更新を行う。
                 ArktoonMigrator.Migrate();
             }
@@ -89,19 +90,18 @@ namespace ArktoonShaders
             EditorApplication.update += EditorUpdate;
         }
 
-        private static void EditorUpdate()
-        {
-            while (!www.isDone) return;
+        private static void EditorUpdate() {
+            while(!www.isDone) return;
 
             #if UNITY_2017_OR_NEWER
-                if (www.isNetworkError || www.isHttpError) {
+                if(www.isNetworkError || www.isHttpError) {
                     Debug.Log(www.error);
                 } else {
                     UpdateHandler(www.downloadHandler.text);
                 }
             #else
                 #pragma warning disable 0618
-                if (www.isError) {
+                if(www.isError) {
                     Debug.Log(www.error);
                 } else {
                     UpdateHandler(www.downloadHandler.text);
@@ -112,16 +112,14 @@ namespace ArktoonShaders
             EditorApplication.update -= EditorUpdate;
         }
 
-        static void UpdateHandler(string apiResult)
-        {
+        static void UpdateHandler(string apiResult) {
             gitJson git = JsonUtility.FromJson<gitJson>(apiResult);
             string version = git.tag_name;
             EditorUserSettings.SetConfigValue ("arktoon_version_remote", version);
             Debug.Log("[Arktoon] Remote version : " + version);
         }
 
-        public class gitJson
-        {
+        public class gitJson {
             public string tag_name;
         }
     }

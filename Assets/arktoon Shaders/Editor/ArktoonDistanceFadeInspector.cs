@@ -11,8 +11,13 @@ using System.Linq;
 using System;
 
 namespace ArktoonShaders {
-    public class ArktoonInspector : ShaderGUI {
+    public class ArktoonDistanceFadeInspector : ShaderGUI {
         #region MaterialProperties
+        MaterialProperty FADEMODE;
+        MaterialProperty CustomColor;
+        MaterialProperty FadeStartDepth;
+        MaterialProperty FadeEndDepth;
+        MaterialProperty VisibilityInversion;
         MaterialProperty BaseTexture;
         MaterialProperty BaseColor;
         MaterialProperty Normalmap;
@@ -201,6 +206,11 @@ namespace ArktoonShaders {
             bool isEmissiveFreak = shader.name.Contains("/EmissiveFreak/");
 
             // FindProperties
+            FADEMODE = FindProperty("_FADEMODE", props, false);
+            CustomColor = FindProperty("_CustomColor", props, false);
+            FadeStartDepth = FindProperty("_FadeStartDepth", props, false);
+            FadeEndDepth = FindProperty("_FadeEndDepth", props, false);
+            VisibilityInversion = FindProperty("_VisibilityInversion", props, false);
             BaseTexture = FindProperty("_MainTex", props, false);
             BaseColor = FindProperty("_Color", props, false);
             Normalmap = FindProperty("_BumpMap", props, false);
@@ -362,6 +372,24 @@ namespace ArktoonShaders {
             EditorGUIUtility.labelWidth = 0f;
 
             EditorGUI.BeginChangeCheck(); {
+                // DistanceFade
+                UIHelper.ShurikenHeader("DistanceFade");
+                UIHelper.DrawWithGroup(() => {
+                    UIHelper.DrawWithGroup(() => {
+                        materialEditor.ShaderProperty(FADEMODE, "Fade Mode");
+                        materialEditor.ShaderProperty(CustomColor, "Custom Color");
+                    });
+
+                    UIHelper.DrawWithGroup(() => {
+                        materialEditor.ShaderProperty(FadeStartDepth, "Fade Start Depth");
+                        materialEditor.ShaderProperty(FadeEndDepth, "Fade End Depth");
+                    });
+
+                    UIHelper.DrawWithGroup(() => {
+                        materialEditor.ShaderProperty(VisibilityInversion, "Visibility Inversion");
+                    });
+                });
+
                 // Common
                 UIHelper.ShurikenHeader("Common");
                 UIHelper.DrawWithGroup(() => {
@@ -889,6 +917,7 @@ namespace ArktoonShaders {
         }
     }
 
+    /*
     static class UIHelper {
         static int HEADER_HEIGHT = 22;
 
@@ -1003,5 +1032,5 @@ namespace ArktoonShaders {
 
             SetKeyword(prop, (Math.Abs(prop.floatValue) > 0.001f));
         }
-    }
+    }*/
 }
